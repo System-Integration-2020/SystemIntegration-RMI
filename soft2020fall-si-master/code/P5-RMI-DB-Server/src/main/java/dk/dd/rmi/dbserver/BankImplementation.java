@@ -48,7 +48,7 @@ public class BankImplementation extends UnicastRemoteObject implements BankInter
             ResultSet rs=ps.executeQuery();
             while(rs.next())
             {  
-                Customer c=new Customer();  
+                Customer c=new Customer();
                 c.setAccnum(rs.getLong(1));
                 c.setName(rs.getString(2));  
                 c.setAmount(rs.getDouble(3));
