@@ -20,6 +20,18 @@ public class Customer
     @NonNull
     private Double amount;
 
+    public Double getAmount() {
+        return amount;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Long getAccnum() {
+        return accnum;
+    }
+
     public void setAccnum(Long accnum) {
         this.accnum = accnum;
     }
