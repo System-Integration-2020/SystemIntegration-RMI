@@ -4,11 +4,19 @@ package dk.dd.rmi.dbserver;
  *
  * @author Dora Di
  */
+import com.fasterxml.jackson.databind.ObjectMapper;
+import net.minidev.json.JSONArray;
+import net.minidev.json.JSONObject;
+import net.minidev.json.parser.JSONParser;
+import org.springframework.boot.json.GsonJsonParser;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
@@ -22,7 +30,7 @@ import java.util.List;
 public class BankImplementation extends UnicastRemoteObject implements BankInterface
 {
     // public static String url = "jdbc:h2:mem:Bank";
-    public static String url = "jdbc:h2:file:/users/tdi/ideaprojects/p5-rmi-db-Server/src/main/resources/db/bank";
+    public static String url = "jdbc:h2:C:/Users/Highyard/IdeaProjects/SystemIntegration-RMI/soft2020fall-si-master/code/P5-RMI-DB-Server/src/main/resources/db/bank";
     public static String user = "sa";
     public static String password = "";
     public static String driver = "org.h2.Driver";
@@ -35,7 +43,7 @@ public class BankImplementation extends UnicastRemoteObject implements BankInter
         return String.format("Hello %s!", name);
     }
 
-    //@GetMapping("/bank")
+    @GetMapping("/millionaires")
     public List<Customer> getMillionaires()
     {
 
@@ -44,7 +52,7 @@ public class BankImplementation extends UnicastRemoteObject implements BankInter
         {
             Class.forName(driver);
             Connection con=DriverManager.getConnection(url, user, password);
-            PreparedStatement ps=con.prepareStatement("select * from Customer where amount >= 100000;");
+            PreparedStatement ps=con.prepareStatement("select * from Customer where amount >= 1000000;");
             ResultSet rs=ps.executeQuery();
             while(rs.next())
             {  
@@ -62,7 +70,53 @@ public class BankImplementation extends UnicastRemoteObject implements BankInter
             System.out.println(e);
         }  
         return list;  
-    }  
+    }
+
+    public int getReport(File jsonInputFile)
+    {
+        int i = 0;
+        try
+        {
+            Class.forName(driver);
+            Connection con = DriverManager.getConnection(url, user, password);
+
+            JSONParser parser = new JSONParser();
+            PreparedStatement writePs = null;
+            JSONArray jsonArray = (JSONArray) parser.parse(new FileReader(jsonInputFile));
+            for (Object object: jsonArray) {
+                JSONObject customer = (JSONObject) object;
+                String accnumVal = (String) customer.get("accnum");
+
+                String nameVal = (String) customer.get("name");
+
+                String amountVal = (String) customer.get("amount");
+
+
+                writePs = con.prepareStatement("INSERT INTO Customer " + "VALUES (?, ?, ?)");
+                writePs.setString(1, accnumVal);
+                writePs.setString(2, nameVal);
+                writePs.setString(3, amountVal);
+                writePs.executeUpdate();
+            }
+
+            PreparedStatement ps = con.prepareStatement("select * from Customer");
+
+            ResultSet rs=ps.executeQuery();
+
+            while(rs.next())
+            {
+                i++;
+            }
+
+
+            con.close();
+        }
+        catch(Exception e)
+        {
+            System.out.println(e);
+        }
+        return i;
+    }
 }  
 
 

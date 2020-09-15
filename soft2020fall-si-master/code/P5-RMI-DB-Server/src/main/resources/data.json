@@ -1,0 +1,17 @@
+[
+  {
+    "accnum": "999",
+    "name": "John",
+    "amount": "1000000"
+  },
+  {
+    "accnum": "998",
+    "name": "Kurt",
+    "amount": "100"
+  },
+  {
+    "accnum": "997",
+    "name": "Birgit",
+    "amount": "123456"
+  }
+]
